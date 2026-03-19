@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Control de Asistencia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+        .dashboard-card {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .dashboard-card i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        .dashboard-card span {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .card-register { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .card-reports { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .card-details { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .card-stats { background: linear-gradient(135deg, #10b981, #059669); }
+        .card-info { background: linear-gradient(135deg, #a855f7, #6b21a8); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem;">Gestión de Asistencia</h1>
+            <h2 style="font-size: 1.5rem; color: #6366f1; font-weight: 600; margin-bottom: 1rem;">Iglesia Fuente de Bendición</h2>
+            <p style="color: var(--text-muted);">Bienvenido al portal central de nuestra Iglesia</p>
+            <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; font-weight: 600;">🤓 Desarrollado por Juan Quiel</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <a href="/registro" class="dashboard-card card-register">
+                <i>📝</i>
+                <span>Registro de Culto</span>
+            </a>
+            <a href="/reports" class="dashboard-card card-reports">
+                <i>📊</i>
+                <span>Informes Mensuales</span>
+            </a>
+            <a href="/details" class="dashboard-card card-details">
+                <i>🔍</i>
+                <span>Detalles de Cultos</span>
+            </a>
+            <a href="/stats/annual" class="dashboard-card card-stats">
+                <i>📈</i>
+                <span>Estadísticas Anuales</span>
+            </a>
+            <a href="/about" class="dashboard-card card-info">
+                <i>✨</i>
+                <span>Información</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

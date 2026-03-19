@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca de - Control de Asistencia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="max-width: 800px;">
+        <header>
+            <h1>Información de la Aplicación</h1>
+            <p>Objetivo y Funcionamiento</p>
+        </header>
+
+        <div class="nav-tabs">
+            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
+            <a href="/registro" class="nav-link"><i>📝</i> Registro</a>
+            <a href="/reports" class="nav-link"><i>📊</i> Informe Mensual</a>
+            <a href="/details" class="nav-link"><i>🔍</i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link active"><i>✨</i> Información</a>
+        </div>
+
+        <div class="card">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">¿Qué es esta aplicación?</h2>
+            <p style="margin-bottom: 1.5rem; line-height: 1.8;">
+                Esta herramienta ha sido diseñada para facilitar la **Gestión de Asistencia** de la *Iglesia Fuente de Bendición*. 
+                Su objetivo principal es permitir un seguimiento preciso y visual del crecimiento de la congregación y sus diversos ministerios.
+            </p>
+
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">Funciones Principales:</h3>
+            <ul style="margin-bottom: 2rem; padding-left: 1.5rem; line-height: 1.8;">
+                <li>**Registro Digital**: Captura rápida de asistencia, visitas y testimonios por ministerio.</li>
+                <li>**Informe Mensual**: Generación automática de reportes detallados y exportables.</li>
+                <li>**Detalles de Cultos**: Historial organizado de cada servicio para análisis granular.</li>
+                <li>**Estadísticas Anuales**: Visualización gráfica del impacto y alcance de la iglesia a lo largo del año.</li>
+            </ul>
+
+            <div style="text-align: center; padding: 2rem; background: rgba(99, 102, 241, 0.05); border-radius: 1rem; border: 1px dashed var(--primary);">
+                <p style="font-size: 1.2rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem;">
+                    Hecha con mucho amor y cariño para la gloria de Dios.
+                </p>
+                <p style="color: var(--text-muted); font-style: italic;">
+                    "Y todo lo que hagáis, hacedlo de corazón, como para el Señor y no para los hombres." - Colosenses 3:23
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/" class="btn-submit" style="display: inline-block; width: auto; padding: 0.75rem 2rem;">Volver al Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle por Culto - Iglesia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container" style="max-width: 900px;">
+        <header>
+            <h1>Detalle Individual</h1>
+            <p>Información detallada de cada culto registrado</p>
+        </header>
+
+        <div class="nav-tabs">
+            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
+            <a href="/registro" class="nav-link"><i>📝</i> Registro</a>
+            <a href="/reports" class="nav-link"><i>📊</i> Informe Mensual</a>
+            <a href="/details" class="nav-link active"><i>🔍</i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link"><i>✨</i> Información</a>
+        </div>
+
+        <div class="card" style="padding: 1rem; margin-bottom: 2rem;">
+            <form action="/details" method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+                <label style="margin: 0; font-weight: 700;">Filtrar Mes:</label>
+                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; font-size: 1.25rem; font-weight: 700; padding: 0.75rem; border: 2px solid var(--primary);">
+                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.75rem 1.5rem; width: auto;">Filtrar</button>
+            </form>
+        </div>
+
+        {% if not records %}
+        <div class="card" style="text-align: center;">
+            <p style="color: var(--text-muted);">No hay registros para este mes.</p>
+            <a href="/" class="btn-submit" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Registrar primer culto</a>
+        </div>
+        {% endif %}
+
+        {% for r in records %}
+        <div class="card" style="margin-bottom: 2rem; padding: 1.5rem; border-top: 5px solid var(--primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                <div>
+                    <span style="display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">{{ r.weekday_name }}</span>
+                    <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">{{ r.date.strftime('%d / %m / %Y') }}</span>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="font-size: 1rem; color: #1e293b; margin: 0; text-transform: uppercase;">{{ r.ministry_of_service }}</h2>
+                    <span style="font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">{{ r.shift }}</span>
+                </div>
+            </div>
+
+            <p style="margin-bottom: 1rem;"><strong>Tipo:</strong> {{ r.service_type }} ({{ r.day_category }})</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <!-- Asistencia & Porcentajes -->
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.75rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Asistencia y %</h3>
+                    <ul style="list-style: none; font-size: 0.9rem;">
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Niños:</span> <span>{{ r.kids }} ({{ r.pct.kids }}%)</span></li>
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Adolescentes:</span> <span>{{ r.teens }} ({{ r.pct.teens }}%)</span></li>
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Jóvenes:</span> <span>{{ r.youth }} ({{ r.pct.youth }}%)</span></li>
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Damas:</span> <span>{{ r.women }} ({{ r.pct.women }}%)</span></li>
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Caballeros:</span> <span>{{ r.men }} ({{ r.pct.men }}%)</span></li>
+                        <li style="border-top: 1px solid #ddd; margin-top: 0.5rem; padding-top: 0.25rem; font-weight: 700; display: flex; justify-content: space-between;">
+                            <span>TOTAL:</span> <span>{{ r.total_attn }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visitas y Testimonios -->
+                <div style="background: #fdf2f2; padding: 1rem; border-radius: 0.75rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Visitas y Testimonios</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
+                        <div>
+                            <strong>Visitas:</strong>
+                            <p>Niñ: {{r.visits_kids}} | Adol: {{r.visits_teens}}</p>
+                            <p>Jov: {{r.visits_youth}} | Cab: {{r.visits_men}}</p>
+                            <p>Dam: {{r.visits_women}}</p>
+                        </div>
+                        <div>
+                            <strong>Testimonios:</strong>
+                            <p>Niñ: {{r.testimonies_kids}} | Adol: {{r.testimonies_teens}}</p>
+                            <p>Jov: {{r.testimonies_youth}} | Cab: {{r.testimonies_men}}</p>
+                            <p>Dam: {{r.testimonies_women}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Convertidos y Reconciliados -->
+                <div style="background: #ecfdf5; padding: 1rem; border-radius: 0.75rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Evangelismo</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
+                        <div>
+                            <strong>Convertidos:</strong>
+                            <p>Niñ: {{r.converts_kids}} | Adol: {{r.converts_teens}}</p>
+                            <p>Jov: {{r.converts_youth}} | Cab: {{r.converts_men}}</p>
+                            <p>Dam: {{r.converts_women}}</p>
+                        </div>
+                        <div>
+                            <strong>Reconcil.:</strong>
+                            <p>Niñ: {{r.reconciled_kids}} | Adol: {{r.reconciled_teens}}</p>
+                            <p>Jov: {{r.reconciled_youth}} | Cab: {{r.reconciled_men}}</p>
+                            <p>Dam: {{r.reconciled_women}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <button onclick="window.print()" class="btn-submit" style="width: auto; background: #64748b;">Imprimir Detalle</button>
+        </div>
+    </div>
+</body>
+</html>

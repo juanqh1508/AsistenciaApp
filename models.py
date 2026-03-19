@@ -9,6 +9,7 @@ class AttendanceRecord(db.Model):
     ministry_of_service = db.Column(db.String(50), nullable=False) # Niños, Damas, Intercesión, etc.
     service_type = db.Column(db.String(50), nullable=False) # Local, Zona, Provincial, Nacional
     shift = db.Column(db.String(50), nullable=False) # Mañana, Tarde, Noche
+    day_category = db.Column(db.String(20), nullable=False, default='Semana') # Semana, Dominical
     
     # Counts
     kids = db.Column(db.Integer, default=0)
@@ -16,8 +17,20 @@ class AttendanceRecord(db.Model):
     youth = db.Column(db.Integer, default=0)
     women = db.Column(db.Integer, default=0)
     men = db.Column(db.Integer, default=0)
-    visits = db.Column(db.Integer, default=0)
-    testimonies = db.Column(db.Integer, default=0)
+    
+    visits = db.Column(db.Integer, default=0) # Total
+    visits_kids = db.Column(db.Integer, default=0)
+    visits_teens = db.Column(db.Integer, default=0)
+    visits_youth = db.Column(db.Integer, default=0)
+    visits_men = db.Column(db.Integer, default=0)
+    visits_women = db.Column(db.Integer, default=0)
+    
+    testimonies = db.Column(db.Integer, default=0) # Total
+    testimonies_kids = db.Column(db.Integer, default=0)
+    testimonies_teens = db.Column(db.Integer, default=0)
+    testimonies_youth = db.Column(db.Integer, default=0)
+    testimonies_women = db.Column(db.Integer, default=0)
+    testimonies_men = db.Column(db.Integer, default=0)
     
     # Converts (Convertidos)
     converts_total = db.Column(db.Integer, default=0)

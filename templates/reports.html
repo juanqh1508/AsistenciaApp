@@ -8,165 +8,185 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @media print {
+            .nav-tabs, form, .btn-submit, header p { display: none !important; }
+            .card { box-shadow: none !important; border: 1px solid #eee !important; margin: 0 !important; padding: 1rem !important; }
+            body { background: white !important; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="max-width: 900px;">
         <header>
-            <h1>Informes y Estadísticas</h1>
-            <p>Resumen por Ministerio</p>
+            <h1>Informes Mensuales</h1>
+            <p>Resumen Estadístico Consolidado</p>
         </header>
 
         <div class="nav-tabs">
-            <a href="/" class="nav-link">Registro</a>
-            <a href="/reports" class="nav-link active">Informes</a>
+            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
+            <a href="/registro" class="nav-link"><i>📝</i> Registro</a>
+            <a href="/reports" class="nav-link active"><i>📊</i> Informe Mensual</a>
+            <a href="/details" class="nav-link"><i>🔍</i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link"><i>✨</i> Información</a>
         </div>
 
         <div class="card" style="padding: 1rem; margin-bottom: 1rem;">
-            <form action="/reports" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <select name="ministry" style="flex: 1; min-width: 120px;">
-                    <option value="">Todos los Ministerios</option>
-                    {% for m in ministries %}
-                    <option value="{{ m }}" {% if selected_min == m %}selected{% endif %}>{{ m }}</option>
-                    {% endfor %}
-                </select>
-                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; min-width: 120px;">
-                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.5rem 1rem; width: auto;">Filtrar</button>
+            <form action="/reports" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; min-width: 150px; font-size: 1.25rem; font-weight: 700; padding: 0.75rem; border: 2px solid var(--primary);">
+                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.75rem 1.5rem; width: auto;">Ver Información</button>
             </form>
+            <button onclick="window.print()" class="btn-submit" style="margin-top: 1rem; background: #475569; padding: 0.5rem 1rem;">Exportar Reporte Mensual a PDF</button>
         </div>
 
-        <div class="counter-grid" style="margin-bottom: 2rem;">
-            <div class="stat-box" style="background: var(--primary); color: white; padding: 1rem;">
-                <span class="stat-val" style="font-size: 1.5rem;">{{ total_stats.total_attn if total_stats else 0 }}</span>
-                <span class="stat-label" style="color: rgba(255,255,255,0.8)">Asistencia Total</span>
-            </div>
-            <div class="stat-box" style="background: #10b981; color: white; padding: 1rem;">
-                <span class="stat-val" style="font-size: 1.5rem;">{{ total_stats.total_converts if total_stats else 0 }}</span>
-                <span class="stat-label" style="color: rgba(255,255,255,0.8)">Convertidos</span>
-            </div>
-        </div>
-
-        {% if ministry_summaries %}
-        <div class="card">
-            <h2 style="margin-bottom: 1rem;">Resumen Mensual por Ministerio</h2>
+        <!-- INFORME GENERAL DE LA IGLESIA -->
+        <div id="general-report-card" class="card" style="position: relative;">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">Informe General de la Iglesia</h2>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
                     <thead>
-                        <tr style="border-bottom: 2px solid var(--border); text-align: left;">
-                            <th style="padding: 0.5rem;">Ministerio</th>
-                            <th style="padding: 0.5rem; text-align: center;">Cultos</th>
-                            <th style="padding: 0.5rem; text-align: center;">Asist.</th>
-                            <th style="padding: 0.5rem; text-align: center;">Conv.</th>
+                        <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--border);">
+                            <th style="padding: 1rem;">Categoría / Sección</th>
+                            <th style="padding: 1rem; text-align: center;">Semana</th>
+                            <th style="padding: 1rem; text-align: center;">Dominical</th>
+                            <th style="padding: 1rem; text-align: center; background: #e2e8f0;">TOTAL</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for ms in ministry_summaries %}
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 0.5rem; font-weight: 600;">{{ ms.name }}</td>
-                            <td style="padding: 0.5rem; text-align: center;">{{ ms.services }}</td>
-                            <td style="padding: 0.5rem; text-align: center;">{{ ms.total_attn }}</td>
-                            <td style="padding: 0.5rem; text-align: center;">{{ ms.total_converts }}</td>
+                        {# MACRO PARA SECCIONES #}
+                        {% macro section_rows(title, rows, subtotal_key) %}
+                        <tr style="background: #f8fafc; font-weight: 700; color: var(--primary);">
+                            <td colspan="4" style="padding: 0.75rem; border-top: 2px solid #e2e8f0;">{{ title }}</td>
+                        </tr>
+                        {% for label, key in rows %}
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.6rem 1rem;">{{ label }}</td>
+                            <td style="padding: 0.6rem; text-align: center;">{{ gen_church.semana[key] or 0 }}</td>
+                            <td style="padding: 0.6rem; text-align: center;">{{ gen_church.dominical[key] or 0 }}</td>
+                            <td style="padding: 0.6rem; text-align: center; font-weight: 600; background: #fcfdfe;">{{ gen_church.total[key] or 0 }}</td>
                         </tr>
                         {% endfor %}
+                        <tr style="background: #f1f5f9; font-weight: 700; border-bottom: 2px solid #e2e8f0;">
+                            <td style="padding: 0.75rem 1rem;">SUBTOTAL {{ title }}</td>
+                            <td style="padding: 0.75rem; text-align: center;">{{ gen_church.semana[subtotal_key] or 0 }}</td>
+                            <td style="padding: 0.75rem; text-align: center;">{{ gen_church.dominical[subtotal_key] or 0 }}</td>
+                            <td style="padding: 0.75rem; text-align: center; color: var(--primary);">{{ gen_church.total[subtotal_key] or 0 }}</td>
+                        </tr>
+                        {% endmacro %}
+
+                        {{ section_rows('ASISTENCIA', [
+                            ('Niños', 'kids'), ('Adolescentes', 'teens'), ('Jóvenes', 'youth'), 
+                            ('Damas', 'women'), ('Caballeros', 'men')
+                        ], 'total_asistencia') }}
+
+                        {{ section_rows('VISITAS', [
+                            ('Niños', 'visits_kids'), ('Adolescentes', 'visits_teens'), ('Jóvenes', 'visits_youth'), 
+                            ('Damas', 'visits_women'), ('Caballeros', 'visits_men')
+                        ], 'total_visitas') }}
+
+                        {{ section_rows('TESTIMONIOS', [
+                            ('Niños', 'testimonies_kids'), ('Adolescentes', 'testimonies_teens'), ('Jóvenes', 'testimonies_youth'), 
+                            ('Damas', 'testimonies_women'), ('Caballeros', 'testimonies_men')
+                        ], 'total_testimonios') }}
+
+                        {{ section_rows('CONVERTIDOS', [
+                            ('Niños', 'converts_kids'), ('Adolescentes', 'converts_teens'), ('Jóvenes', 'converts_youth'), 
+                            ('Damas', 'converts_women'), ('Caballeros', 'converts_men')
+                        ], 'total_convertidos') }}
+
+                        {{ section_rows('RECONCILIADOS', [
+                            ('Niños', 'reconciled_kids'), ('Adolescentes', 'reconciled_teens'), ('Jóvenes', 'reconciled_youth'), 
+                            ('Damas', 'reconciled_women'), ('Caballeros', 'reconciled_men')
+                        ], 'total_reconciliados') }}
                     </tbody>
                 </table>
             </div>
-        </div>
-        {% endif %}
 
-        {% if ministry_summaries %}
-        <div class="card">
-            <h2 style="margin-bottom: 1rem;">Gráfico de Asistencia</h2>
-            <canvas id="ministryChart" style="width: 100%; max-height: 400px;"></canvas>
+            <button onclick="exportReport('general-report-card', 'Informe General de la Iglesia')" class="btn-export-small" style="margin-top: 1.5rem; width: 100%; font-size: 0.9rem; padding: 0.6rem; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; border-radius: 0.5rem; transition: all 0.2s; font-weight: 600;">
+                📥 Descargar Informe General (PDF / Imagen)
+            </button>
         </div>
-        {% endif %}
 
-        <div class="card">
-            <h2 style="margin-bottom: 1rem;">Registros Individuales</h2>
-            {% if not records %}
-            <p style="text-align: center; color: var(--text-muted);">No se encontraron registros.</p>
-            {% endif %}
-            
-            {% for r in records %}
-            <div class="report-card">
-                <div class="report-header">
-                    <span>{{ r.date.strftime('%d/%m/%Y') }} - {{ r.shift }}</span>
-                    <span>{{ r.service_type }}</span>
-                </div>
-                <div class="report-title">{{ r.ministry_of_service }}</div>
+        <!-- INFORMES POR MINISTERIO -->
+        <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">Informes por Ministerio</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                {% set icons = {
+                    'Niños': '👶', 'Adolescentes': '🛹', 'Jóvenes': '🎸', 
+                    'Damas': '🌸', 'Caballeros': '🛡️'
+                } %}
+                {% set colors = {
+                    'Niños': '#fef9c3', 'Adolescentes': '#f3e8ff', 'Jóvenes': '#dcfce7', 
+                    'Damas': '#ffe4e6', 'Caballeros': '#dbeafe'
+                } %}
+                {% set borders = {
+                    'Niños': '#eab308', 'Adolescentes': '#a855f7', 'Jóvenes': '#22c55e', 
+                    'Damas': '#f43f5e', 'Caballeros': '#3b82f6'
+                } %}
                 
-                <div class="report-stats">
-                    <div class="stat-box">
-                        <span class="stat-val">{{ r.kids + r.teens + r.youth + r.women + r.men }}</span>
-                        <span class="stat-label">Total Gral.</span>
+                {% for report in ministry_reports %}
+                <div id="report-{{ loop.index }}" class="ministry-report-card" style="background: {{ colors.get(report.name, '#f8fafc') }}; border-left: 6px solid {{ borders.get(report.name, '#64748b') }}; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); break-inside: avoid; position: relative;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <h3 style="margin: 0; color: #1e293b; font-size: 1.25rem;">{{ report.name }}</h3>
+                        <span style="font-size: 2rem;">{{ icons.get(report.name, '📝') }}</span>
                     </div>
-                    <div class="stat-box">
-                        <span class="stat-val">{{ r.visits }}</span>
-                        <span class="stat-label">Visitas</span>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 0.75rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                                <div>
+                                    <p style="margin: 0.3rem 0;">📅 <strong>Cultos:</strong> {{ report.services }}</p>
+                                    <p style="margin: 0.3rem 0;">📈 <strong>Asist. Total:</strong> {{ report.total_attn }}</p>
+                                    <p style="margin: 0.3rem 0;">👤 <strong>Asist. {{ report.name }}:</strong> {{ report.focus_attn }}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 0.3rem 0;">⭐ <strong>Asist. Dominical:</strong> {{ report.dom_attn }}</p>
+                                    <p style="margin: 0.3rem 0;">💬 <strong>Testimonios:</strong> {{ report.testimonies }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 0.75rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                                <div>
+                                    <p style="margin: 0.3rem 0;">👥 <strong>Visitas:</strong> {{ report.visits }}</p>
+                                    <p style="margin: 0.3rem 0;">🕊️ <strong>Convertidos:</strong> {{ report.converts }}</p>
+                                </div>
+                                <div>
+                                    <p style="margin: 0.3rem 0;">🙌 <strong>Reconciliados:</strong> {{ report.reconciled }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <span class="stat-val">{{ r.converts_total }}</span>
-                        <span class="stat-label">Convert.</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-val">{{ r.reconciled_kids + r.reconciled_teens + r.reconciled_youth + r.reconciled_men + r.reconciled_women }}</span>
-                        <span class="stat-label">Reconcil.</span>
-                    </div>
+                    
+                    <button onclick="exportReport('report-{{ loop.index }}', '{{ report.name }}')" class="btn-export-small" style="margin-top: 1rem; width: 100%; font-size: 0.75rem; padding: 0.4rem; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; border-radius: 0.4rem; transition: all 0.2s;">
+                        📥 Descargar Informe Individual
+                    </button>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
 
-    {% if ministry_summaries %}
     <script>
-        const ctx = document.getElementById('ministryChart').getContext('2d');
-        const data = {{ ministry_summaries | tojson }};
-        
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(m => m.name),
-                datasets: [{
-                    label: 'Asistencia Total',
-                    data: data.map(m => m.total_attn),
-                    backgroundColor: 'rgba(99, 102, 241, 0.7)',
-                    borderColor: 'rgb(99, 102, 241)',
-                    borderWidth: 1,
-                    borderRadius: 8
-                }, {
-                    label: 'Convertidos',
-                    data: data.map(m => m.total_converts),
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderColor: 'rgb(16, 185, 129)',
-                    borderWidth: 1,
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
+        function exportReport(elementId, name) {
+            const element = document.getElementById(elementId);
+            const printWindow = window.open('', '', 'height=600,width=800');
+            
+            printWindow.document.write('<html><head><title>Informe ' + name + '</title>');
+            printWindow.document.write('<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">');
+            printWindow.document.write('<style>body{padding: 2rem; background: white;} .btn-export-small{display:none;} .ministry-report-card{box-shadow:none !important; border: 1px solid #ddd !important;}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(element.outerHTML);
+            printWindow.document.write('</body></html>');
+            
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
     </script>
-    {% endif %}
 </body>
 </html>

@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    {% macro counter_field(name, label) %}
+    {% macro counter_field(id, label, color_class='btn-asistencia') %}
     <div class="counter-item">
         <span class="counter-label">{{ label }}</span>
         <div class="counter-controls">
-            <button type="button" class="btn-step" onclick="updateCounter('{{ name }}', -1)">-</button>
-            <span id="val-{{ name }}" class="counter-value">0</span>
-            <input type="hidden" name="{{ name }}" id="input-{{ name }}" value="0">
-            <button type="button" class="btn-step" onclick="updateCounter('{{ name }}', 1)">+</button>
+            <button type="button" class="btn-step {{ color_class }}" onclick="updateCounter('{{ id }}', -1)">-</button>
+            <span id="val-{{ id }}" class="counter-value">0</span>
+            <input type="hidden" name="{{ id }}" id="input-{{ id }}" value="0">
+            <button type="button" class="btn-step {{ color_class }}" onclick="updateCounter('{{ id }}', 1)">+</button>
         </div>
     </div>
     {% endmacro %}
@@ -29,8 +29,12 @@
         </header>
 
         <div class="nav-tabs">
-            <a href="/" class="nav-link active">Registro</a>
-            <a href="/reports" class="nav-link">Informes</a>
+            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
+            <a href="/registro" class="nav-link active"><i>📝</i> Registro</a>
+            <a href="/reports" class="nav-link"><i>📊</i> Informe Mensual</a>
+            <a href="/details" class="nav-link"><i>🔍</i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link"><i>✨</i> Información</a>
         </div>
 
         <form action="/submit" method="POST" class="card">
@@ -69,34 +73,52 @@
             <!-- Asistencia -->
             <div class="section-title">Asistencia General</div>
             <div class="counter-grid">
-                {{ counter_field('kids', 'Niños') }}
-                {{ counter_field('teens', 'Adolescentes') }}
-                {{ counter_field('youth', 'Jóvenes') }}
-                {{ counter_field('women', 'Mujeres') }}
-                {{ counter_field('men', 'Hombres') }}
-                {{ counter_field('visits', 'Visitas') }}
-                {{ counter_field('testimonies', 'Testimonios') }}
+                {{ counter_field('kids', 'Niños', 'btn-asistencia') }}
+                {{ counter_field('teens', 'Adolescentes', 'btn-asistencia') }}
+                {{ counter_field('youth', 'Jóvenes', 'btn-asistencia') }}
+                {{ counter_field('women', 'Damas', 'btn-asistencia') }}
+                {{ counter_field('men', 'Caballeros', 'btn-asistencia') }}
+            </div>
+
+            <!-- Visitas Detalle -->
+            <div class="section-title" style="color: #f59e0b;">Visitas por Categoría</div>
+            <div class="counter-grid">
+                {{ counter_field('visits_kids', 'Niños', 'btn-visitas') }}
+                {{ counter_field('visits_teens', 'Adol.', 'btn-visitas') }}
+                {{ counter_field('visits_youth', 'Jóvenes', 'btn-visitas') }}
+                {{ counter_field('visits_men', 'Caballeros', 'btn-visitas') }}
+                {{ counter_field('visits_women', 'Damas', 'btn-visitas') }}
+            </div>
+
+            <!-- Testimonios -->
+            <div class="section-title" style="color: #8b5cf6;">Testimonios</div>
+            <div class="counter-grid">
+                {{ counter_field('testimonies_kids', 'Niños', 'btn-testimonios') }}
+                {{ counter_field('testimonies_teens', 'Adol.', 'btn-testimonios') }}
+                {{ counter_field('testimonies_youth', 'Jóvenes', 'btn-testimonios') }}
+                {{ counter_field('testimonies_men', 'Caballeros', 'btn-testimonios') }}
+                {{ counter_field('testimonies_women', 'Damas', 'btn-testimonios') }}
             </div>
 
             <!-- Convertidos -->
-            <div class="section-title">Convertidos</div>
+            <div class="section-title" style="color: #10b981;">Convertidos</div>
             <div class="counter-grid">
-                {{ counter_field('converts_total', 'Total') }}
-                {{ counter_field('converts_kids', 'Niños') }}
-                {{ counter_field('converts_teens', 'Adolescentes') }}
-                {{ counter_field('converts_youth', 'Jóvenes') }}
-                {{ counter_field('converts_men', 'Caballeros') }}
-                {{ counter_field('converts_women', 'Damas') }}
+                {{ counter_field('converts_total', 'Total', 'btn-convertidos') }}
+                {{ counter_field('converts_kids', 'Niños', 'btn-convertidos') }}
+                {{ counter_field('converts_teens', 'Adol.', 'btn-convertidos') }}
+                {{ counter_field('converts_youth', 'Jóvenes', 'btn-convertidos') }}
+                {{ counter_field('converts_men', 'Caballeros', 'btn-convertidos') }}
+                {{ counter_field('converts_women', 'Damas', 'btn-convertidos') }}
             </div>
 
             <!-- Reconciliados -->
-            <div class="section-title">Reconciliados</div>
+            <div class="section-title" style="color: #06b6d4;">Reconciliados</div>
             <div class="counter-grid">
-                {{ counter_field('reconciled_kids', 'Niños') }}
-                {{ counter_field('reconciled_teens', 'Adolescentes') }}
-                {{ counter_field('reconciled_youth', 'Jóvenes') }}
-                {{ counter_field('reconciled_men', 'Caballeros') }}
-                {{ counter_field('reconciled_women', 'Damas') }}
+                {{ counter_field('reconciled_kids', 'Niños', 'btn-reconciliados') }}
+                {{ counter_field('reconciled_teens', 'Adol.', 'btn-reconciliados') }}
+                {{ counter_field('reconciled_youth', 'Jóvenes', 'btn-reconciliados') }}
+                {{ counter_field('reconciled_men', 'Caballeros', 'btn-reconciliados') }}
+                {{ counter_field('reconciled_women', 'Damas', 'btn-reconciliados') }}
             </div>
 
             <button type="submit" class="btn-submit">Guardar Asistencia</button>
