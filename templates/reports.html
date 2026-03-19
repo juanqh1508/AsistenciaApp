@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes de Asistencia - Iglesia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Informes y Estadísticas</h1>
+            <p>Resumen por Ministerio</p>
+        </header>
+
+        <div class="nav-tabs">
+            <a href="/" class="nav-link">Registro</a>
+            <a href="/reports" class="nav-link active">Informes</a>
+        </div>
+
+        <div class="card" style="padding: 1rem; margin-bottom: 1rem;">
+            <form action="/reports" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <select name="ministry" style="flex: 1; min-width: 120px;">
+                    <option value="">Todos los Ministerios</option>
+                    {% for m in ministries %}
+                    <option value="{{ m }}" {% if selected_min == m %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; min-width: 120px;">
+                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.5rem 1rem; width: auto;">Filtrar</button>
+            </form>
+        </div>
+
+        <div class="counter-grid" style="margin-bottom: 2rem;">
+            <div class="stat-box" style="background: var(--primary); color: white; padding: 1rem;">
+                <span class="stat-val" style="font-size: 1.5rem;">{{ total_stats.total_attn if total_stats else 0 }}</span>
+                <span class="stat-label" style="color: rgba(255,255,255,0.8)">Asistencia Total</span>
+            </div>
+            <div class="stat-box" style="background: #10b981; color: white; padding: 1rem;">
+                <span class="stat-val" style="font-size: 1.5rem;">{{ total_stats.total_converts if total_stats else 0 }}</span>
+                <span class="stat-label" style="color: rgba(255,255,255,0.8)">Convertidos</span>
+            </div>
+        </div>
+
+        {% if ministry_summaries %}
+        <div class="card">
+            <h2 style="margin-bottom: 1rem;">Resumen Mensual por Ministerio</h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                            <th style="padding: 0.5rem;">Ministerio</th>
+                            <th style="padding: 0.5rem; text-align: center;">Cultos</th>
+                            <th style="padding: 0.5rem; text-align: center;">Asist.</th>
+                            <th style="padding: 0.5rem; text-align: center;">Conv.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ms in ministry_summaries %}
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem; font-weight: 600;">{{ ms.name }}</td>
+                            <td style="padding: 0.5rem; text-align: center;">{{ ms.services }}</td>
+                            <td style="padding: 0.5rem; text-align: center;">{{ ms.total_attn }}</td>
+                            <td style="padding: 0.5rem; text-align: center;">{{ ms.total_converts }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if ministry_summaries %}
+        <div class="card">
+            <h2 style="margin-bottom: 1rem;">Gráfico de Asistencia</h2>
+            <canvas id="ministryChart" style="width: 100%; max-height: 400px;"></canvas>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2 style="margin-bottom: 1rem;">Registros Individuales</h2>
+            {% if not records %}
+            <p style="text-align: center; color: var(--text-muted);">No se encontraron registros.</p>
+            {% endif %}
+            
+            {% for r in records %}
+            <div class="report-card">
+                <div class="report-header">
+                    <span>{{ r.date.strftime('%d/%m/%Y') }} - {{ r.shift }}</span>
+                    <span>{{ r.service_type }}</span>
+                </div>
+                <div class="report-title">{{ r.ministry_of_service }}</div>
+                
+                <div class="report-stats">
+                    <div class="stat-box">
+                        <span class="stat-val">{{ r.kids + r.teens + r.youth + r.women + r.men }}</span>
+                        <span class="stat-label">Total Gral.</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">{{ r.visits }}</span>
+                        <span class="stat-label">Visitas</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">{{ r.converts_total }}</span>
+                        <span class="stat-label">Convert.</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val">{{ r.reconciled_kids + r.reconciled_teens + r.reconciled_youth + r.reconciled_men + r.reconciled_women }}</span>
+                        <span class="stat-label">Reconcil.</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if ministry_summaries %}
+    <script>
+        const ctx = document.getElementById('ministryChart').getContext('2d');
+        const data = {{ ministry_summaries | tojson }};
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(m => m.name),
+                datasets: [{
+                    label: 'Asistencia Total',
+                    data: data.map(m => m.total_attn),
+                    backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                    borderColor: 'rgb(99, 102, 241)',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }, {
+                    label: 'Convertidos',
+                    data: data.map(m => m.total_converts),
+                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    borderColor: 'rgb(16, 185, 129)',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

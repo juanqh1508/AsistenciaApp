@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia - Iglesia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% macro counter_field(name, label) %}
+    <div class="counter-item">
+        <span class="counter-label">{{ label }}</span>
+        <div class="counter-controls">
+            <button type="button" class="btn-step" onclick="updateCounter('{{ name }}', -1)">-</button>
+            <span id="val-{{ name }}" class="counter-value">0</span>
+            <input type="hidden" name="{{ name }}" id="input-{{ name }}" value="0">
+            <button type="button" class="btn-step" onclick="updateCounter('{{ name }}', 1)">+</button>
+        </div>
+    </div>
+    {% endmacro %}
+
+    <div class="container">
+        <header>
+            <h1>Registro de Asistencia</h1>
+            <p>Ministerio y Estadísticas</p>
+        </header>
+
+        <div class="nav-tabs">
+            <a href="/" class="nav-link active">Registro</a>
+            <a href="/reports" class="nav-link">Informes</a>
+        </div>
+
+        <form action="/submit" method="POST" class="card">
+            <div class="form-group">
+                <label for="date">Fecha</label>
+                <input type="date" id="date" name="date" required value="{{ now }}">
+            </div>
+
+            <div class="form-group">
+                <label for="ministry">Ministerio del Culto</label>
+                <select name="ministry_of_service" id="ministry" required>
+                    {% for m in ministries %}
+                    <option value="{{ m }}">{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="service_type">Tipo de Culto</label>
+                <select name="service_type" id="service_type" required>
+                    {% for st in service_types %}
+                    <option value="{{ st }}">{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="shift">Jornada</label>
+                <select name="shift" id="shift" required>
+                    {% for s in shifts %}
+                    <option value="{{ s }}">{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Asistencia -->
+            <div class="section-title">Asistencia General</div>
+            <div class="counter-grid">
+                {{ counter_field('kids', 'Niños') }}
+                {{ counter_field('teens', 'Adolescentes') }}
+                {{ counter_field('youth', 'Jóvenes') }}
+                {{ counter_field('women', 'Mujeres') }}
+                {{ counter_field('men', 'Hombres') }}
+                {{ counter_field('visits', 'Visitas') }}
+                {{ counter_field('testimonies', 'Testimonios') }}
+            </div>
+
+            <!-- Convertidos -->
+            <div class="section-title">Convertidos</div>
+            <div class="counter-grid">
+                {{ counter_field('converts_total', 'Total') }}
+                {{ counter_field('converts_kids', 'Niños') }}
+                {{ counter_field('converts_teens', 'Adolescentes') }}
+                {{ counter_field('converts_youth', 'Jóvenes') }}
+                {{ counter_field('converts_men', 'Caballeros') }}
+                {{ counter_field('converts_women', 'Damas') }}
+            </div>
+
+            <!-- Reconciliados -->
+            <div class="section-title">Reconciliados</div>
+            <div class="counter-grid">
+                {{ counter_field('reconciled_kids', 'Niños') }}
+                {{ counter_field('reconciled_teens', 'Adolescentes') }}
+                {{ counter_field('reconciled_youth', 'Jóvenes') }}
+                {{ counter_field('reconciled_men', 'Caballeros') }}
+                {{ counter_field('reconciled_women', 'Damas') }}
+            </div>
+
+            <button type="submit" class="btn-submit">Guardar Asistencia</button>
+        </form>
+    </div>
+
+
+    <script>
+        function updateCounter(id, delta) {
+            const valSpan = document.getElementById('val-' + id);
+            const input = document.getElementById('input-' + id);
+            let current = parseInt(valSpan.innerText);
+            current = Math.max(0, current + delta);
+            valSpan.innerText = current;
+            input.value = current;
+        }
+
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+    </script>
+</body>
+</html>
