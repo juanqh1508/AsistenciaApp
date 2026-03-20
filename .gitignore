@@ -1,0 +1,22 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Variables de entorno (SENSITIVE - NO SUBIR A GITHUB)
+.env
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bases de datos locales (Opcional, ya que usas Supabase)
+instance/
+*.db
+
+# VS Code
+.vscode/
+
+# Otros
+.DS_Store

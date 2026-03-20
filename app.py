@@ -3,38 +3,20 @@ from models import db, AttendanceRecord
 import os
 from datetime import datetime
 from sqlalchemy import func, extract, text, or_
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///attendance.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///attendance.db').replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
 def init_db():
     with app.app_context():
+        # SQLAlchemy handles table creation automatically
         db.create_all()
-        # Safe addition of columns if missing
-        try:
-            with db.engine.connect() as conn:
-                result = conn.execute(text("PRAGMA table_info(attendance_record)"))
-                columns = [row[1] for row in result]
-                
-                cols_to_add = {
-                    'day_category': "VARCHAR(20) DEFAULT 'Semana' NOT NULL",
-                    'testimonies_kids': "INTEGER DEFAULT 0", 'testimonies_teens': "INTEGER DEFAULT 0",
-                    'testimonies_youth': "INTEGER DEFAULT 0", 'testimonies_women': "INTEGER DEFAULT 0",
-                    'testimonies_men': "INTEGER DEFAULT 0",
-                    'visits_kids': "INTEGER DEFAULT 0", 'visits_teens': "INTEGER DEFAULT 0",
-                    'visits_youth': "INTEGER DEFAULT 0", 'visits_women': "INTEGER DEFAULT 0",
-                    'visits_men': "INTEGER DEFAULT 0"
-                }
-                
-                for col, definition in cols_to_add.items():
-                    if col not in columns:
-                        conn.execute(text(f"ALTER TABLE attendance_record ADD COLUMN {col} {definition}"))
-                conn.commit()
-        except Exception as e:
-            print(f"DB update error: {e}")
 
 init_db()
 
@@ -62,7 +44,7 @@ def submit():
     
     record = AttendanceRecord(
         date=date_obj,
-        ministry_of_service=data.get('ministry'),
+        ministry_of_service=data.get('ministry_of_service'),
         service_type=data.get('service_type'),
         shift=data.get('shift'),
         day_category=day_category,
@@ -98,8 +80,14 @@ def submit():
     record.testimonies = record.testimonies_kids + record.testimonies_teens + record.testimonies_youth + record.testimonies_women + record.testimonies_men
     record.converts_total = record.converts_kids + record.converts_teens + record.converts_youth + record.converts_women + record.converts_men
     
-    db.session.add(record)
-    db.session.commit()
+    try:
+        db.session.add(record)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERROR AL GUARDAR: {e}")
+        return f"Error al guardar en la base de datos: {e}", 500
+        
     return redirect(url_for('index'))
 
 @app.route('/reports')
