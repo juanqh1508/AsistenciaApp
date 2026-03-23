@@ -17,9 +17,22 @@
             <p>Información detallada de cada culto registrado</p>
         </header>
 
+        <!-- User Info Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 1.5rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-user-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <span style="font-weight: 700; color: var(--text-dark);">{{ username }} <span style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">({{ user_role|capitalize }})</span></span>
+            </div>
+            <a href="/logout" style="text-decoration: none; color: #ef4444; font-weight: 700; font-size: 0.9rem;">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+
         <div class="nav-tabs">
             <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
+            {% if user_role in ['admin', 'developer', 'protocolo'] %}
             <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
+            {% endif %}
             <a href="/reports" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
             <a href="/details" class="nav-link active"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
             <a href="/stats/annual" class="nav-link"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>
@@ -48,9 +61,18 @@
                     <span style="display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">{{ r.weekday_name }}</span>
                     <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">{{ r.date.strftime('%d / %m / %Y') }}</span>
                 </div>
-                <div style="text-align: right;">
-                    <h2 style="font-size: 1rem; color: #1e293b; margin: 0; text-transform: uppercase;">{{ r.ministry_of_service }}</h2>
-                    <span style="font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">{{ r.shift }}</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    {% if user_role == 'developer' %}
+                    <form action="{{ url_for('delete_record', id=r.id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar este registro? Esta acción no se puede deshacer.');" style="margin: 0;">
+                        <button type="submit" style="background: #fee2e2; color: #dc2626; border: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" title="Eliminar definitivamente">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <div style="text-align: right;">
+                        <h2 style="font-size: 1rem; color: #1e293b; margin: 0; text-transform: uppercase;">{{ r.ministry_of_service }}</h2>
+                        <span style="font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">{{ r.shift }}</span>
+                    </div>
                 </div>
             </div>
 

@@ -49,3 +49,9 @@ class AttendanceRecord(db.Model):
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(50), nullable=False) # Plain text as requested for testing
+    role = db.Column(db.String(20), nullable=False) # admin, protocolo, pastor

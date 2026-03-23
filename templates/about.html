@@ -15,9 +15,22 @@
             <p>Objetivo y Funcionamiento</p>
         </header>
 
+        <!-- User Info Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 1.5rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-user-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <span style="font-weight: 700; color: var(--text-dark);">{{ username }} <span style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">({{ user_role|capitalize }})</span></span>
+            </div>
+            <a href="/logout" style="text-decoration: none; color: #ef4444; font-weight: 700; font-size: 0.9rem;">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+
         <div class="nav-tabs">
             <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
+            {% if user_role in ['admin', 'developer', 'protocolo'] %}
             <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
+            {% endif %}
             <a href="/reports" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
             <a href="/details" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
             <a href="/stats/annual" class="nav-link"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>

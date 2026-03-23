@@ -1,22 +1,52 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
-from models import db, AttendanceRecord
+from models import db, AttendanceRecord, User
 import os
 from datetime import datetime
 from sqlalchemy import func, extract, text, or_
 from dotenv import load_dotenv
+from functools import wraps
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///attendance.db').replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv('SECRET_KEY', 'fuente-de-bendicion-secret-2024')
 
 db.init_app(app)
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def role_required(roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if session.get('role') not in roles:
+                return "Acceso Denegado: No tienes permisos para esta sección", 403
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 def init_db():
     with app.app_context():
-        # SQLAlchemy handles table creation automatically
         db.create_all()
+        # Seed users if not exist (Update with new credentials)
+        # Clear old testing users if any (optional but good for this change)
+        if not User.query.filter_by(username='Protocolo').first():
+            # Delete old users first to avoid confusion
+            User.query.filter(User.username.in_(['admin', 'protocolo', 'pastor'])).delete()
+            
+            db.session.add(User(username='Protocolo', password='bless2026', role='protocolo'))
+            db.session.add(User(username='Pastor', password='yaweh2026', role='pastor'))
+            db.session.add(User(username='Administracion', password='jireh2026', role='administracion'))
+            db.session.add(User(username='Developer', password='Juan1508*', role='developer'))
+            db.session.commit()
 
 init_db()
 
@@ -25,15 +55,39 @@ MINISTRIES = ["Niños", "Adolescentes", "Jóvenes", "Caballeros", "Damas", "Inte
 SERVICE_TYPES = ["Local", "Zona", "Provincial", "Nacional"]
 SHIFTS = ["Mañana", "Tarde", "Noche"]
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username, password=password).first()
+        if user:
+            session['user_id'] = user.id
+            session['username'] = user.username
+            session['role'] = user.role
+            return redirect(url_for('dashboard'))
+        return render_template('login.html', error="Usuario o contraseña incorrectos")
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', user_role=session.get('role'), username=session.get('username'))
 
 @app.route('/registro')
+@login_required
+@role_required(['admin', 'developer', 'protocolo'])
 def index():
-    return render_template('index.html', ministries=MINISTRIES, service_types=SERVICE_TYPES, shifts=SHIFTS)
+    return render_template('index.html', ministries=MINISTRIES, service_types=SERVICE_TYPES, shifts=SHIFTS, user_role=session.get('role'), username=session.get('username'))
 
 @app.route('/submit', methods=['POST'])
+@login_required
+@role_required(['admin', 'developer', 'protocolo'])
 def submit():
     data = request.form
     date_str = data.get('date')
@@ -90,7 +144,21 @@ def submit():
         
     return redirect(url_for('index'))
 
+@app.route('/delete/<int:id>', methods=['POST'])
+@login_required
+@role_required(['developer'])
+def delete_record(id):
+    record = AttendanceRecord.query.get_or_404(id)
+    try:
+        db.session.delete(record)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return f"Error al eliminar: {e}", 500
+    return redirect(url_for('details_view'))
+
 @app.route('/reports')
+@login_required
 def reports():
     month_filter = request.args.get('month') or datetime.now().strftime('%Y-%m')
     year, month = map(int, month_filter.split('-'))
@@ -140,22 +208,10 @@ def reports():
     }
 
     # 2. MINISTRY SPECIFIC REPORTS
-    # Define special merge groups
-    MERGE_GROUPS = {
-        'Adolescentes': ['Adolescentes', 'Jóvenes'],
-        'Jóvenes': ['Adolescentes', 'Jóvenes']
-    }
-    # Map the focus group for attendance counts
-    FOCUS_MAP = {
-        'Niños': 'kids',
-        'Adolescentes': 'teens',
-        'Jóvenes': 'youth',
-        'Caballeros': 'men',
-        'Damas': 'women'
-    }
+    MERGE_GROUPS = {'Adolescentes': ['Adolescentes', 'Jóvenes'], 'Jóvenes': ['Adolescentes', 'Jóvenes']}
+    FOCUS_MAP = {'Niños': 'kids', 'Adolescentes': 'teens', 'Jóvenes': 'youth', 'Caballeros': 'men', 'Damas': 'women'}
 
     ministry_reports = []
-    # Always loop through the core 5 groups requested by the user
     target_groups = ['Niños', 'Adolescentes', 'Jóvenes', 'Damas', 'Caballeros']
 
     for name in target_groups:
@@ -163,7 +219,6 @@ def reports():
         focus = FOCUS_MAP.get(name)
         if not focus: continue
         
-        # 1. MINISTRY-SPECIFIC SERVICES
         m_base = db.session.query(
             func.count(AttendanceRecord.id).label('service_count'),
             func.sum(AttendanceRecord.kids + AttendanceRecord.teens + AttendanceRecord.youth + AttendanceRecord.women + AttendanceRecord.men).label('total_attn'),
@@ -171,7 +226,6 @@ def reports():
         ).filter(extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month,
                  AttendanceRecord.ministry_of_service.in_(source_mins)).first()
         
-        # 2. GLOBAL STATS FOR THIS CATEGORY
         global_stats = db.session.query(
             func.sum(getattr(AttendanceRecord, str(focus))).label('total_attn'),
             func.sum(getattr(AttendanceRecord, f'converts_{focus}')).label('total_conv'),
@@ -179,25 +233,21 @@ def reports():
             func.sum(getattr(AttendanceRecord, f'testimonies_{focus}')).label('total_test')
         ).filter(extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month).first()
 
-        # Specific Dominical Assistance for this category
         dom_attn = db.session.query(func.sum(getattr(AttendanceRecord, str(focus)))).filter(
             extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month,
             AttendanceRecord.day_category == 'Dominical').scalar() or 0
 
-        # Mapping reconciled
         rec_map = {'kids': 'reconciled_kids', 'teens': 'reconciled_teens', 'youth': 'reconciled_youth', 'women': 'reconciled_women', 'men': 'reconciled_men'}
         total_rec = db.session.query(func.sum(getattr(AttendanceRecord, str(rec_map.get(focus, 'reconciled_kids'))))).filter(
             extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month).scalar() or 0
 
         ministry_reports.append({
-            'name': name,
-            'services': m_base.service_count if m_base else 0,
+            'name': name, 'services': m_base.service_count if m_base else 0,
             'total_attn': m_base.total_attn or 0 if m_base else 0,
             'focus_attn': m_base.focus_attn or 0 if m_base else 0,
             'dom_attn': dom_attn,
             'converts': global_stats.total_conv or 0 if global_stats else 0,
-            'reconciled': total_rec,
-            'visits': global_stats.total_visits or 0 if global_stats else 0,
+            'reconciled': total_rec, 'visits': global_stats.total_visits or 0 if global_stats else 0,
             'testimonies': global_stats.total_test or 0 if global_stats else 0
         })
 
@@ -205,13 +255,15 @@ def reports():
                                             extract('month', AttendanceRecord.date) == month).order_by(AttendanceRecord.date.desc()).all()
 
     return render_template('reports.html', gen_church=gen_church, ministry_reports=ministry_reports, 
-                          selected_month=month_filter, records=records)
+                          selected_month=month_filter, records=records, user_role=session.get('role'), username=session.get('username'))
 
 @app.route('/stats')
+@login_required
 def stats_view():
     return redirect(url_for('stats_annual_view'))
 
 @app.route('/details')
+@login_required
 def details_view():
     month_filter = request.args.get('month') or datetime.now().strftime('%Y-%m')
     year, month = map(int, month_filter.split('-'))
@@ -235,9 +287,10 @@ def details_view():
         }
         r.total_attn = total
 
-    return render_template('details.html', records=records, selected_month=month_filter)
+    return render_template('details.html', records=records, selected_month=month_filter, user_role=session.get('role'), username=session.get('username'))
 
 @app.route('/stats/annual')
+@login_required
 def stats_annual_view():
     year = int(request.args.get('year') or datetime.now().year)
     
@@ -278,11 +331,14 @@ def stats_annual_view():
                            mode='annual',
                            selected_year=year,
                            semanal_data=semanal_data,
-                           dominical_data=dominical_data)
+                           dominical_data=dominical_data, 
+                           user_role=session.get('role'), 
+                           username=session.get('username'))
 
 @app.route('/about')
+@login_required
 def about_view():
-    return render_template('about.html')
+    return render_template('about.html', user_role=session.get('role'), username=session.get('username'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
