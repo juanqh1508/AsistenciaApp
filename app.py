@@ -15,6 +15,10 @@ app.secret_key = os.getenv('SECRET_KEY', 'fuente-de-bendicion-secret-2024')
 
 db.init_app(app)
 
+@app.route('/health')
+def health():
+    return {"status": "ok"}, 200
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
