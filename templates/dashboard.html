@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Control de Asistencia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -57,23 +58,23 @@
 
         <div class="dashboard-grid">
             <a href="/registro" class="dashboard-card card-register">
-                <i>📝</i>
+                <i class="fa-solid fa-pen-to-square"></i>
                 <span>Registro de Culto</span>
             </a>
             <a href="/reports" class="dashboard-card card-reports">
-                <i>📊</i>
+                <i class="fa-solid fa-chart-simple"></i>
                 <span>Informes Mensuales</span>
             </a>
             <a href="/details" class="dashboard-card card-details">
-                <i>🔍</i>
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <span>Detalles de Cultos</span>
             </a>
             <a href="/stats/annual" class="dashboard-card card-stats">
-                <i>📈</i>
+                <i class="fa-solid fa-chart-line"></i>
                 <span>Estadísticas Anuales</span>
             </a>
             <a href="/about" class="dashboard-card card-info">
-                <i>✨</i>
+                <i class="fa-solid fa-circle-info"></i>
                 <span>Información</span>
             </a>
         </div>

@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -17,12 +18,12 @@
         </header>
 
         <div class="nav-tabs">
-            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
-            <a href="/registro" class="nav-link"><i>📝</i> Registro</a>
-            <a href="/reports" class="nav-link"><i>📊</i> Informe Mensual</a>
-            <a href="/details" class="nav-link active"><i>🔍</i> Detalles de Cultos</a>
-            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
-            <a href="/about" class="nav-link"><i>✨</i> Información</a>
+            <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
+            <a href="/reports" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
+            <a href="/details" class="nav-link active"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link"><i class="fa-solid fa-circle-info"></i> Información</a>
         </div>
 
         <div class="card" style="padding: 1rem; margin-bottom: 2rem;">

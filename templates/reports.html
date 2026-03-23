@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         @media print {
@@ -24,12 +25,12 @@
         </header>
 
         <div class="nav-tabs">
-            <a href="/" class="nav-link"><i>🏠</i> Inicio</a>
-            <a href="/registro" class="nav-link"><i>📝</i> Registro</a>
-            <a href="/reports" class="nav-link active"><i>📊</i> Informe Mensual</a>
-            <a href="/details" class="nav-link"><i>🔍</i> Detalles de Cultos</a>
-            <a href="/stats/annual" class="nav-link"><i>📈</i> Estadísticas Anuales</a>
-            <a href="/about" class="nav-link"><i>✨</i> Información</a>
+            <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
+            <a href="/reports" class="nav-link active"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
+            <a href="/details" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
+            <a href="/stats/annual" class="nav-link"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>
+            <a href="/about" class="nav-link"><i class="fa-solid fa-circle-info"></i> Información</a>
         </div>
 
         <div class="card" style="padding: 1rem; margin-bottom: 1rem;">
@@ -44,7 +45,7 @@
         <div id="general-report-card" class="card" style="position: relative;">
             <h2 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">Informe General de la Iglesia</h2>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
                     <thead>
                         <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--border);">
                             <th style="padding: 1rem;">Categoría / Sección</th>
@@ -134,7 +135,7 @@
                     
                     <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
                         <div style="background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 0.75rem;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 1rem;">
                                 <div>
                                     <p style="margin: 0.3rem 0;">📅 <strong>Cultos:</strong> {{ report.services }}</p>
                                     <p style="margin: 0.3rem 0;">📈 <strong>Asist. Total:</strong> {{ report.total_attn }}</p>
@@ -148,7 +149,7 @@
                         </div>
                         
                         <div style="background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 0.75rem;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 1rem;">
                                 <div>
                                     <p style="margin: 0.3rem 0;">👥 <strong>Visitas:</strong> {{ report.visits }}</p>
                                     <p style="margin: 0.3rem 0;">🕊️ <strong>Convertidos:</strong> {{ report.converts }}</p>
