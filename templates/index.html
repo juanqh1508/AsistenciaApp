@@ -41,34 +41,47 @@
         <form action="/submit" method="POST" class="card">
             <div class="form-group">
                 <label for="date">Fecha</label>
-                <input type="date" id="date" name="date" required value="{{ now }}">
+                <div class="date-row">
+                    <input type="date" id="date" name="date" required value="{{ now }}" style="flex: 1;">
+                    <button type="button" class="btn-date-quick" onclick="setDate('today')">Hoy</button>
+                    <button type="button" class="btn-date-quick" onclick="setDate('yesterday')">Ayer</button>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="ministry">Ministerio del Culto</label>
-                <select name="ministry_of_service" id="ministry" required>
+                <label>Ministerio del Culto</label>
+                <div class="radio-grid">
                     {% for m in ministries %}
-                    <option value="{{ m }}">{{ m }}</option>
+                    <label class="radio-item" data-min="{{ m }}">
+                        <input type="radio" name="ministry_of_service" value="{{ m }}" required {% if loop.first %}checked{% endif %}>
+                        <span>{{ m }}</span>
+                    </label>
                     {% endfor %}
-                </select>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="service_type">Tipo de Culto</label>
-                <select name="service_type" id="service_type" required>
+                <label>Tipo de Culto</label>
+                <div class="radio-grid">
                     {% for st in service_types %}
-                    <option value="{{ st }}">{{ st }}</option>
+                    <label class="radio-item radio-type" data-val="{{ st }}">
+                        <input type="radio" name="service_type" value="{{ st }}" required {% if loop.first %}checked{% endif %}>
+                        <span>{{ st }}</span>
+                    </label>
                     {% endfor %}
-                </select>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="shift">Jornada</label>
-                <select name="shift" id="shift" required>
+                <label>Jornada</label>
+                <div class="radio-grid">
                     {% for s in shifts %}
-                    <option value="{{ s }}">{{ s }}</option>
+                    <label class="radio-item radio-shift" data-val="{{ s }}">
+                        <input type="radio" name="shift" value="{{ s }}" required {% if loop.first %}checked{% endif %}>
+                        <span>{{ s }}</span>
+                    </label>
                     {% endfor %}
-                </select>
+                </div>
             </div>
 
             <!-- Asistencia -->
@@ -135,6 +148,15 @@
             current = Math.max(0, current + delta);
             valSpan.innerText = current;
             input.value = current;
+        }
+
+        function setDate(day) {
+            const dateInput = document.getElementById('date');
+            const target = new Date();
+            if (day === 'yesterday') {
+                target.setDate(target.getDate() - 1);
+            }
+            dateInput.valueAsDate = target;
         }
 
         // Set default date to today

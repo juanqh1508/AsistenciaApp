@@ -80,6 +80,29 @@ select:focus, input[type="date"]:focus {
     border-color: var(--primary);
 }
 
+.date-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-date-quick {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-date-quick:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
@@ -188,6 +211,70 @@ select:focus, input[type="date"]:focus {
 .btn-submit:active {
     transform: scale(0.98);
 }
+
+/* Radio Button Grid */
+.radio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.radio-item {
+    cursor: pointer;
+}
+
+.radio-item input {
+    display: none;
+}
+
+.radio-item span {
+    display: block;
+    padding: 0.75rem;
+    text-align: center;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    color: var(--text-muted);
+}
+
+.radio-item:hover span {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.radio-item input:checked + span {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Colores específicos para turnos */
+.radio-shift[data-val="Mañana"] input:checked + span { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+.radio-shift[data-val="Tarde"] input:checked + span { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+.radio-shift[data-val="Noche"] input:checked + span { background: #1e293b; border-color: #1e293b; box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3); }
+
+/* Colores para Tipos de Culto */
+.radio-type[data-val="Local"] input:checked + span { background: #8b5cf6; border-color: #8b5cf6; }
+.radio-type[data-val="Zona"] input:checked + span { background: #ec4899; border-color: #ec4899; }
+.radio-type[data-val="Provincial"] input:checked + span { background: #10b981; border-color: #10b981; }
+.radio-type[data-val="Nacional"] input:checked + span { background: #f43f5e; border-color: #f43f5e; }
+
+/* Colores para Ministerios */
+.radio-item[data-min="Niños"] input:checked + span { background: #facc15; border-color: #facc15; color: #000; }
+.radio-item[data-min="Adolescentes"] input:checked + span { background: #a855f7; border-color: #a855f7; }
+.radio-item[data-min="Jóvenes"] input:checked + span { background: #10b981; border-color: #10b981; }
+.radio-item[data-min="Caballeros"] input:checked + span { background: #3b82f6; border-color: #3b82f6; }
+.radio-item[data-min="Damas"] input:checked + span { background: #f43f5e; border-color: #f43f5e; }
+.radio-item[data-min="Alabanza"] input:checked + span { background: #8b5cf6; border-color: #8b5cf6; }
+.radio-item[data-min="Evangelismo"] input:checked + span { background: #ea580c; border-color: #ea580c; }
+.radio-item[data-min="Familia"] input:checked + span { background: #db2777; border-color: #db2777; }
+.radio-item[data-min="Águilas"] input:checked + span { background: #475569; border-color: #475569; }
 
 .nav-tabs {
     display: flex;
