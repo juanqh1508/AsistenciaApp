@@ -69,7 +69,16 @@ def login():
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
-            return redirect(url_for('index'))
+            # Redirect each role to their appropriate module
+            role = user.role
+            if role in ['protocolo', 'developer', 'admin']:
+                return redirect(url_for('index'))
+            elif role == 'pastor':
+                return redirect(url_for('details_view'))
+            elif role == 'administracion':
+                return redirect(url_for('reports'))
+            else:
+                return redirect(url_for('index'))
         return render_template('login.html', error="Usuario o contraseña incorrectos")
     return render_template('login.html')
 
@@ -328,18 +337,69 @@ def stats_annual_view():
         if 1 <= m <= 12:
             semanal_data[m-1] = r.total or 0
             
-    for r in sunday_res:
-        m = int(r.month)
-        if 1 <= m <= 12:
-            dominical_data[m-1] = r.total or 0
-            
-    return render_template('stats.html', 
+    # 3. Total services for the year
+    total_services = db.session.query(func.count(AttendanceRecord.id)).filter(
+        extract('year', AttendanceRecord.date) == year).scalar() or 0
+    weekly_services = db.session.query(func.count(AttendanceRecord.id)).filter(
+        extract('year', AttendanceRecord.date) == year,
+        AttendanceRecord.day_category == 'Semana').scalar() or 0
+    sunday_services = db.session.query(func.count(AttendanceRecord.id)).filter(
+        extract('year', AttendanceRecord.date) == year,
+        AttendanceRecord.day_category == 'Dominical').scalar() or 0
+
+    # 4. Attendance totals and averages
+    total_weekly = sum(semanal_data)
+    total_sunday = sum(dominical_data)
+    total_annual = total_weekly + total_sunday
+    avg_weekly = round(total_weekly / weekly_services, 1) if weekly_services > 0 else 0
+    avg_sunday = round(total_sunday / sunday_services, 1) if sunday_services > 0 else 0
+
+    # 5. Cultos per ministry
+    MINISTRIES_LIST = ["Niños", "Adolescentes", "Jóvenes", "Damas", "Caballeros", "Alabanza", "Evangelismo", "Familia", "Intercesión", "Águilas"]
+    ministry_services = []
+    for min_name in MINISTRIES_LIST:
+        count = db.session.query(func.count(AttendanceRecord.id)).filter(
+            extract('year', AttendanceRecord.date) == year,
+            AttendanceRecord.ministry_of_service == min_name).scalar() or 0
+        if count > 0:
+            ministry_services.append({'name': min_name, 'count': count})
+
+    # 6. Person-type totals for annual pie chart
+    pie_res = db.session.query(
+        func.sum(AttendanceRecord.kids).label('kids'),
+        func.sum(AttendanceRecord.teens).label('teens'),
+        func.sum(AttendanceRecord.youth).label('youth'),
+        func.sum(AttendanceRecord.women).label('women'),
+        func.sum(AttendanceRecord.men).label('men')
+    ).filter(extract('year', AttendanceRecord.date) == year).first()
+    pie_kids  = (pie_res.kids  or 0) if pie_res else 0
+    pie_teens = (pie_res.teens or 0) if pie_res else 0
+    pie_youth = (pie_res.youth or 0) if pie_res else 0
+    pie_women = (pie_res.women or 0) if pie_res else 0
+    pie_men   = (pie_res.men   or 0) if pie_res else 0
+
+    return render_template('stats.html',
                            mode='annual',
                            selected_year=year,
                            semanal_data=semanal_data,
-                           dominical_data=dominical_data, 
-                           user_role=session.get('role'), 
+                           dominical_data=dominical_data,
+                           total_weekly=total_weekly,
+                           total_sunday=total_sunday,
+                           total_annual=total_annual,
+                           total_services=total_services,
+                           weekly_services=weekly_services,
+                           sunday_services=sunday_services,
+                           avg_weekly=avg_weekly,
+                           avg_sunday=avg_sunday,
+                           ministry_services=ministry_services,
+                           pie_kids=pie_kids,
+                           pie_teens=pie_teens,
+                           pie_youth=pie_youth,
+                           pie_women=pie_women,
+                           pie_men=pie_men,
+                           user_role=session.get('role'),
                            username=session.get('username'))
+
 
 @app.route('/about')
 @login_required

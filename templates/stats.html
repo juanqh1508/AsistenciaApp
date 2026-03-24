@@ -47,21 +47,57 @@
                 <button type="submit" class="btn-submit" style="margin: 0; padding: 0.75rem 1.5rem; width: auto;">Filtrar Año</button>
             </form>
             
-            <div style="display: flex; justify-content: space-around; padding: 1rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
-                <div style="text-align: center;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Semanal Total</span>
-                    <h4 style="color: #6366f1; font-size: 1.4rem;">{{ semanal_data | sum }}</h4>
-                </div>
-                <div style="text-align: center;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Dominical Total</span>
-                    <h4 style="color: #10b981; font-size: 1.4rem;">{{ dominical_data | sum }}</h4>
-                </div>
-                <div style="text-align: center;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Gran Total {{ selected_year }}</span>
-                    <h4 style="color: var(--primary); font-size: 1.4rem;">{{ (semanal_data | sum) + (dominical_data | sum) }}</h4>
-                </div>
+        <!-- SUMMARY STATS CARDS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: linear-gradient(135deg,#6366f1,#a855f7); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(99,102,241,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Cultos</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#6366f1,#4f46e5); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(99,102,241,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Cultos Semanales</p>
+                <h2 style="font-size:2rem;margin:0;">{{ weekly_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#10b981,#059669); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(16,185,129,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Cultos Dominicales</p>
+                <h2 style="font-size:2rem;margin:0;">{{ sunday_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#f59e0b,#d97706); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(245,158,11,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Asist. Total {{ selected_year }}</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_annual }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#6366f1,#4f46e5); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Semanal</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_weekly }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#10b981,#059669); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Dominical</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_sunday }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#8b5cf6,#7c3aed); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Prom. Semanal</p>
+                <h2 style="font-size:2rem;margin:0;">{{ avg_weekly }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#0ea5e9,#0284c7); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Prom. Dominical</p>
+                <h2 style="font-size:2rem;margin:0;">{{ avg_sunday }}</h2>
             </div>
         </div>
+
+        <!-- MINISTRY SERVICES -->
+        {% if ministry_services %}
+        <div class="card" style="padding:1.5rem; margin-bottom:1.5rem;">
+            <h2 style="color:var(--primary);text-align:center;margin-bottom:1rem;font-size:1.2rem;">&#x26EA; Cultos por Ministerio</h2>
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
+                {% for m in ministry_services %}
+                <div style="background:#f8fafc;border:2px solid var(--border);border-radius:1rem;padding:0.6rem 1.2rem;text-align:center;min-width:110px;">
+                    <span style="font-weight:800;font-size:1.5rem;color:var(--primary);">{{ m.count }}</span><br>
+                    <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">{{ m.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
 
         <div class="card" style="padding: 2rem;">
             <h2 style="margin-bottom: 2rem; font-size: 1.4rem; text-align: center; color: var(--primary);">
@@ -73,6 +109,14 @@
             <div style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
                 <p>Estadísticas con valores numéricos integrados</p>
             </div>
+        </div>
+
+        <!-- PIE CHART ANUAL -->
+        <div class="card" style="border-radius:1.5rem; padding:2rem; background:white; margin-bottom:1.5rem; box-shadow:0 10px 25px -5px rgba(0,0,0,0.07);">
+            <h2 style="color:var(--primary);text-align:center;margin-bottom:.5rem;font-size:1.3rem;">&#x1F4CA; Distribución de Asistencia por Grupo</h2>
+            <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">Total anual acumulado · {{ selected_year }}</p>
+            <div style="max-width:340px;margin:0 auto;"><canvas id="annualPieChart"></canvas></div>
+            <div id="annual-pie-legend" style="display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:1.25rem;"></div>
         </div>
 
         <div style="text-align: center; margin-top: 1rem;">
@@ -179,6 +223,34 @@
                     ctx.restore();
                 }
             }]
+        });
+
+        // === Annual Pie Chart ===
+        const annualPieLabels = ['Ni\u00f1os', 'Adolescentes', 'J\u00f3venes', 'Damas', 'Caballeros'];
+        const annualPieData = [{{ pie_kids }}, {{ pie_teens }}, {{ pie_youth }}, {{ pie_women }}, {{ pie_men }}];
+        const annualPieColors = ['#facc15', '#a855f7', '#10b981', '#f43f5e', '#3b82f6'];
+        const annualTotalPie = annualPieData.reduce((a, b) => a + b, 0);
+
+        new Chart(document.getElementById('annualPieChart').getContext('2d'), {
+            type: 'doughnut',
+            plugins: [ChartDataLabels],
+            data: { labels: annualPieLabels, datasets: [{ data: annualPieData, backgroundColor: annualPieColors, borderColor: 'white', borderWidth: 3, hoverOffset: 14 }] },
+            options: {
+                responsive: true, cutout: '60%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(ctx) { const pct = annualTotalPie > 0 ? ((ctx.raw/annualTotalPie)*100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.raw} (${pct}%)`; } } },
+                    datalabels: { color: 'white', font: { weight: 'bold', size: 13 }, textAlign: 'center',
+                        formatter: function(value) { if (!value) return ''; const pct = annualTotalPie > 0 ? ((value/annualTotalPie)*100).toFixed(0) : 0; return value + '\n(' + pct + '%)'; }
+                    }
+                }
+            }
+        });
+
+        const annualLegend = document.getElementById('annual-pie-legend');
+        annualPieLabels.forEach((label, i) => {
+            const pct = annualTotalPie > 0 ? ((annualPieData[i]/annualTotalPie)*100).toFixed(1) : '0.0';
+            annualLegend.innerHTML += `<div style="display:flex;align-items:center;gap:.35rem;background:#f8fafc;padding:.35rem .7rem;border-radius:2rem;font-size:.82rem;font-weight:700;"><span style="width:11px;height:11px;border-radius:50%;background:${annualPieColors[i]};display:inline-block;"></span>${label}: <strong>${annualPieData[i]}</strong>&nbsp;<span style="color:#94a3b8;">(${pct}%)</span></div>`;
         });
     </script>
 </body>

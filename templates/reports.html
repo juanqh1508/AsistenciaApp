@@ -46,12 +46,12 @@
             </div>
         </header>
 
-        <div class="card" style="padding: 1rem; margin-bottom: 1rem;">
-            <form action="/reports" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; min-width: 150px; font-size: 1.25rem; font-weight: 700; padding: 0.75rem; border: 2px solid var(--primary);">
-                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.75rem 1.5rem; width: auto;">Ver Información</button>
+        <div class="card" style="padding: 1.25rem; margin-bottom: 1rem; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4); border-radius: 1.5rem;">
+            <form action="/reports" method="GET" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                <label style="color: white; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;"><i class="fas fa-calendar-alt"></i> Seleccionar Mes:</label>
+                <input type="month" name="month" value="{{ selected_month }}" style="flex: 1; min-width: 150px; font-size: 1.1rem; font-weight: 700; padding: 0.6rem 1rem; border: none; border-radius: 1rem; background: rgba(255,255,255,0.95); color: #1e293b; cursor: pointer;">
+                <button type="submit" class="btn-submit" style="margin: 0; padding: 0.65rem 1.5rem; width: auto; background: white; color: #6366f1; border: none; font-weight: 800;">Ver Informe</button>
             </form>
-            <button onclick="window.print()" class="btn-submit" style="margin-top: 1rem; background: #475569; padding: 0.5rem 1rem;">Exportar Reporte Mensual a PDF</button>
         </div>
 
         <!-- INFORME GENERAL DE LA IGLESIA -->
@@ -117,9 +117,6 @@
                 </table>
             </div>
 
-            <button onclick="exportReport('general-report-card', 'Informe General de la Iglesia')" class="btn-export-small" style="margin-top: 1.5rem; width: 100%; font-size: 0.9rem; padding: 0.6rem; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; border-radius: 0.5rem; transition: all 0.2s; font-weight: 600;">
-                📥 Descargar Informe General (PDF / Imagen)
-            </button>
         </div>
 
         <!-- INFORMES POR MINISTERIO -->
@@ -182,6 +179,64 @@
             </div>
         </div>
     </div>
+
+    <!-- PIE CHART -->
+    <div class="container" style="max-width: 900px; margin-top: 2rem;">
+        <div class="card" style="border-radius: 1.5rem; padding: 2rem; background: white; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);">
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 0.5rem; font-size: 1.5rem;">📊 Distribución de Asistencia por Grupo</h2>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Total acumulado del mes</p>
+            <div style="max-width: 360px; margin: 0 auto;">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div id="pie-legend" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 1.5rem;"></div>
+        </div>
+    </div>
+    <footer class="app-footer">Desarrollada por Juan Quiel &#x1F60E;</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+        const pieLabels = ['Ni\u00f1os', 'Adolescentes', 'J\u00f3venes', 'Damas', 'Caballeros'];
+        const pieData = [
+            {{ gen_church.total.kids or 0 }},
+            {{ gen_church.total.teens or 0 }},
+            {{ gen_church.total.youth or 0 }},
+            {{ gen_church.total.women or 0 }},
+            {{ gen_church.total.men or 0 }}
+        ];
+        const pieColors = ['#facc15', '#a855f7', '#10b981', '#f43f5e', '#3b82f6'];
+        const totalPie = pieData.reduce((a, b) => a + b, 0);
+
+        new Chart(document.getElementById('pieChart').getContext('2d'), {
+            type: 'doughnut',
+            plugins: [ChartDataLabels],
+            data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: pieColors, borderColor: 'white', borderWidth: 3, hoverOffset: 16 }] },
+            options: {
+                responsive: true, cutout: '60%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(ctx) { const pct = totalPie > 0 ? ((ctx.raw/totalPie)*100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.raw} (${pct}%)`; } } },
+                    datalabels: {
+                        color: 'white',
+                        font: { weight: 'bold', size: 14 },
+                        formatter: function(value, ctx) {
+                            if (value === 0) return '';
+                            const pct = totalPie > 0 ? ((value / totalPie) * 100).toFixed(0) : 0;
+                            return value + '\n(' + pct + '%)';
+                        },
+                        textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                        textAlign: 'center'
+                    }
+                }
+            }
+        });
+
+        const legend = document.getElementById('pie-legend');
+        pieLabels.forEach((label, i) => {
+            const pct = totalPie > 0 ? ((pieData[i]/totalPie)*100).toFixed(1) : '0.0';
+            legend.innerHTML += `<div style="display:flex;align-items:center;gap:0.4rem;background:#f8fafc;padding:0.4rem 0.75rem;border-radius:2rem;font-size:0.85rem;font-weight:700;"><span style="width:12px;height:12px;border-radius:50%;background:${pieColors[i]};display:inline-block;"></span>${label}: <strong>${pieData[i]}</strong>&nbsp;<span style="color:#94a3b8;">(${pct}%)</span></div>`;
+        });
+    </script>
 
     <script>
         function exportReport(elementId, name) {
