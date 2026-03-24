@@ -54,6 +54,42 @@
             </form>
         </div>
 
+        <!-- SUMMARY STATS CARDS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: linear-gradient(135deg,#6366f1,#a855f7); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(99,102,241,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Cultos</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#6366f1,#4f46e5); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(99,102,241,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Cultos Semanales</p>
+                <h2 style="font-size:2rem;margin:0;">{{ weekly_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#10b981,#059669); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(16,185,129,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Cultos Dominicales</p>
+                <h2 style="font-size:2rem;margin:0;">{{ sunday_services }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#f59e0b,#d97706); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center; box-shadow:0 6px 16px rgba(245,158,11,.3);">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Asist. Total Mes</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_monthly }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#6366f1,#4f46e5); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Semanal</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_weekly }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#10b981,#059669); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Total Dominical</p>
+                <h2 style="font-size:2rem;margin:0;">{{ total_sunday }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#8b5cf6,#7c3aed); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Prom. Semanal</p>
+                <h2 style="font-size:2rem;margin:0;">{{ avg_weekly }}</h2>
+            </div>
+            <div style="background: linear-gradient(135deg,#0ea5e9,#0284c7); border-radius:1.25rem; padding:1.25rem; color:white; text-align:center;">
+                <p style="font-size:0.8rem;opacity:.85;margin:0 0 .25rem;">Prom. Dominical</p>
+                <h2 style="font-size:2rem;margin:0;">{{ avg_sunday }}</h2>
+            </div>
+        </div>
+
         <!-- INFORME GENERAL DE LA IGLESIA -->
         <div id="general-report-card" class="card" style="position: relative;">
             <h2 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">Informe General de la Iglesia</h2>

@@ -69,16 +69,8 @@ def login():
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
-            # Redirect each role to their appropriate module
-            role = user.role
-            if role in ['protocolo', 'developer', 'admin']:
-                return redirect(url_for('index'))
-            elif role == 'pastor':
-                return redirect(url_for('details_view'))
-            elif role == 'administracion':
-                return redirect(url_for('reports'))
-            else:
-                return redirect(url_for('index'))
+            flash(f"¡Bienvenido, {user.username}! 🙌 Que Dios bendiga tu servicio.", "welcome")
+            return redirect(url_for('details_view'))
         return render_template('login.html', error="Usuario o contraseña incorrectos")
     return render_template('login.html')
 
@@ -269,8 +261,26 @@ def reports():
     records = AttendanceRecord.query.filter(extract('year', AttendanceRecord.date) == year, 
                                             extract('month', AttendanceRecord.date) == month).order_by(AttendanceRecord.date.desc()).all()
 
+    # Calculate Summary Stats for Monthly Report
+    total_services = db.session.query(func.count(AttendanceRecord.id)).filter(
+        extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month).scalar() or 0
+    weekly_services = db.session.query(func.count(AttendanceRecord.id)).filter(
+        extract('year', AttendanceRecord.date) == year, extract('month', AttendanceRecord.date) == month,
+        AttendanceRecord.day_category == 'Semana').scalar() or 0
+    sunday_services = total_services - weekly_services
+    
+    total_monthly = (gen_church['total'].total_asistencia if gen_church['total'] and gen_church['total'].total_asistencia else 0)
+    total_weekly = (gen_church['semana'].total_asistencia if gen_church['semana'] and gen_church['semana'].total_asistencia else 0)
+    total_sunday = (gen_church['dominical'].total_asistencia if gen_church['dominical'] and gen_church['dominical'].total_asistencia else 0)
+    
+    avg_weekly = round(total_weekly / weekly_services, 1) if weekly_services > 0 else 0
+    avg_sunday = round(total_sunday / sunday_services, 1) if sunday_services > 0 else 0
+
     return render_template('reports.html', gen_church=gen_church, ministry_reports=ministry_reports, 
-                          selected_month=month_filter, records=records, user_role=session.get('role'), username=session.get('username'))
+                          selected_month=month_filter, records=records, user_role=session.get('role'), username=session.get('username'),
+                          total_services=total_services, weekly_services=weekly_services, sunday_services=sunday_services,
+                          total_monthly=total_monthly, total_weekly=total_weekly, total_sunday=total_sunday,
+                          avg_weekly=avg_weekly, avg_sunday=avg_sunday)
 
 @app.route('/stats')
 @login_required
