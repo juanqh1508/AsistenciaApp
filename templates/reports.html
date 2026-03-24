@@ -31,7 +31,6 @@
             </div>
 
             <div class="nav-tabs">
-                <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
                 {% if user_role in ['admin', 'developer', 'protocolo'] %}
                 <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
                 {% endif %}

@@ -447,3 +447,13 @@ select:focus, input[type="date"]:focus {
     font-size: 0.7rem;
     color: var(--text-muted);
 }
+
+.app-footer {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+}

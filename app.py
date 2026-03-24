@@ -69,7 +69,7 @@ def login():
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('index'))
         return render_template('login.html', error="Usuario o contraseña incorrectos")
     return render_template('login.html')
 
@@ -80,8 +80,8 @@ def logout():
 
 @app.route('/')
 @login_required
-def dashboard():
-    return render_template('dashboard.html', user_role=session.get('role'), username=session.get('username'))
+def dashboard_redirect():
+    return redirect(url_for('index'))
 
 @app.route('/registro')
 @login_required
@@ -148,7 +148,7 @@ def submit():
         flash(f"Error al guardar: {e}", "error")
         return redirect(url_for('index'))
         
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('details_view'))
 
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required

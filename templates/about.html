@@ -22,7 +22,6 @@
             </div>
 
             <div class="nav-tabs">
-                <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
                 {% if user_role in ['admin', 'developer', 'protocolo'] %}
                 <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
                 {% endif %}
@@ -54,8 +53,8 @@
             </ul>
 
             <div style="text-align: center; padding: 2rem; background: rgba(99, 102, 241, 0.05); border-radius: 1rem; border: 1px dashed var(--primary);">
-                <p style="font-size: 1.2rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem;">
-                    Hecha con mucho amor y cariño para la gloria de Dios.
+                <p style="font-size: 1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem;">
+                    Desarrollada por Juan Quiel 😎
                 </p>
                 <p style="color: var(--text-muted); font-style: italic;">
                     "Y todo lo que hagáis, hacedlo de corazón, como para el Señor y no para los hombres." - Colosenses 3:23
@@ -64,8 +63,10 @@
         </div>
 
         <div style="text-align: center; margin-top: 2rem;">
-            <a href="/" class="btn-submit" style="display: inline-block; width: auto; padding: 0.75rem 2rem;">Volver al Dashboard</a>
+            <a href="/registro" class="btn-submit" style="display: inline-block; width: auto; padding: 0.75rem 2rem;">Volver al Registro</a>
         </div>
     </div>
+
+    <footer class="app-footer">Desarrollada por Juan Quiel 😎</footer>
 </body>
 </html>
