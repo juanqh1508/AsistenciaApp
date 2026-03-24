@@ -276,64 +276,129 @@ select:focus, input[type="date"]:focus {
 .radio-item[data-min="Familia"] input:checked + span { background: #db2777; border-color: #db2777; }
 .radio-item[data-min="Águilas"] input:checked + span { background: #475569; border-color: #475569; }
 
-.nav-tabs {
-    display: flex;
-    gap: 0.75rem;
+.app-header {
+    background: #1e293b;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 1.5rem;
     margin-bottom: 2rem;
-    justify-content: center;
-    flex-wrap: wrap;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.app-header .user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-header .user-info a {
+    text-decoration: none;
+    color: #f87171;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.app-header .user-info a:hover {
+    color: #ef4444;
+}
+
+.app-header .header-content {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.app-header .module-title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 0.25rem;
+    font-weight: 800;
+}
+
+.app-header .module-subtitle {
+    opacity: 0.7;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.nav-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
     padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 2rem;
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+}
+
+@media (max-width: 600px) {
+    .nav-tabs {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .nav-link {
     text-decoration: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 1.5rem;
+    padding: 0.6rem;
+    border-radius: 1rem;
     background: white;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.9rem;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 0.8rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid var(--border);
+    border: 2px solid transparent;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    justify-content: center;
+    gap: 0.3rem;
+    box-shadow: var(--shadow);
+    text-align: center;
 }
 
 .nav-link i {
     font-size: 1.1rem;
-    font-style: normal;
-    transition: color 0.3s ease;
-}
-
-/* Colores específicos para iconos */
-.nav-link .fa-house { color: #6366f1; }           /* Inicio - Indigo */
-.nav-link .fa-pen-to-square { color: #f59e0b; }   /* Registro - Ámbar */
-.nav-link .fa-chart-simple { color: #8b5cf6; }    /* Informes - Violeta */
-.nav-link .fa-magnifying-glass { color: #06b6d4; } /* Detalles - Cian */
-.nav-link .fa-chart-line { color: #10b981; }      /* Estadísticas - Esmeralda */
-.nav-link .fa-sparkles { color: #f43f5e; }        /* Información - Rosa */
-
-.nav-link.active i {
-    color: white !important;
+    transition: transform 0.3s ease;
 }
 
 .nav-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    border-color: var(--primary);
-    color: var(--primary);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.nav-link.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+.nav-link:hover i {
+    transform: scale(1.2);
+}
+
+/* Colores temáticos por enlace */
+.nav-link[href="/"] { border-color: #6366f122; }
+.nav-link[href="/"]:hover, .nav-link[href="/"].active { background: #6366f1; color: white; border-color: #6366f1; }
+.nav-link[href="/"] i { color: #6366f1; }
+
+.nav-link[href="/registro"] { border-color: #f59e0b22; }
+.nav-link[href="/registro"]:hover, .nav-link[href="/registro"].active { background: #f59e0b; color: white; border-color: #f59e0b; }
+.nav-link[href="/registro"] i { color: #f59e0b; }
+
+.nav-link[href="/reports"] { border-color: #8b5cf622; }
+.nav-link[href="/reports"]:hover, .nav-link[href="/reports"].active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+.nav-link[href="/reports"] i { color: #8b5cf6; }
+
+.nav-link[href="/details"] { border-color: #06b6d422; }
+.nav-link[href="/details"]:hover, .nav-link[href="/details"].active { background: #06b6d4; color: white; border-color: #06b6d4; }
+.nav-link[href="/details"] i { color: #06b6d4; }
+
+.nav-link[href="/stats/annual"] { border-color: #10b98122; }
+.nav-link[href="/stats/annual"]:hover, .nav-link[href="/stats/annual"].active { background: #10b981; color: white; border-color: #10b981; }
+.nav-link[href="/stats/annual"] i { color: #10b981; }
+
+.nav-link[href="/about"] { border-color: #f43f5e22; }
+.nav-link[href="/about"]:hover, .nav-link[href="/about"].active { background: #f43f5e; color: white; border-color: #f43f5e; }
+.nav-link[href="/about"] i { color: #f43f5e; }
+
+.nav-link.active i {
+    color: white !important;
 }
 
 /* Reports Specific */

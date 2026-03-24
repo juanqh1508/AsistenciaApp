@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import func, extract, text, or_
 from dotenv import load_dotenv
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 
 load_dotenv()
 
@@ -141,12 +141,14 @@ def submit():
     try:
         db.session.add(record)
         db.session.commit()
+        flash("¡Se llenó el registro correctamente! ✨", "success")
     except Exception as e:
         db.session.rollback()
         print(f"ERROR AL GUARDAR: {e}")
-        return f"Error al guardar en la base de datos: {e}", 500
+        flash(f"Error al guardar: {e}", "error")
+        return redirect(url_for('index'))
         
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
 
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required

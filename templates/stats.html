@@ -14,32 +14,33 @@
 </head>
 <body>
     <div class="container" style="max-width: 900px;">
-        <header>
-            <h1>Análisis Anual</h1>
-            <p>Resumen Mensual de Asistencia</p>
-        </header>
-
-        <!-- User Info Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 1.5rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fas fa-user-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
-                <span style="font-weight: 700; color: var(--text-dark);">{{ username }} <span style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">({{ user_role|capitalize }})</span></span>
+        <header class="app-header">
+            <div class="user-info">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-user-circle" style="color: #6366f1; font-size: 1.2rem;"></i>
+                    <span style="font-weight: 700;">{{ username }} <span style="font-weight: 400; font-size: 0.8rem; opacity: 0.8;">({{ user_role|capitalize }})</span></span>
+                </div>
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </a>
             </div>
-            <a href="/logout" style="text-decoration: none; color: #ef4444; font-weight: 700; font-size: 0.9rem;">
-                <i class="fas fa-sign-out-alt"></i> Salir
-            </a>
-        </div>
 
-        <div class="nav-tabs">
-            <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
-            {% if user_role in ['admin', 'developer', 'protocolo'] %}
-            <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
-            {% endif %}
-            <a href="/reports" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
-            <a href="/details" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
-            <a href="/stats/annual" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>
-            <a href="/about" class="nav-link"><i class="fa-solid fa-circle-info"></i> Información</a>
-        </div>
+            <div class="nav-tabs">
+                <a href="/" class="nav-link"><i class="fa-solid fa-house"></i> Inicio</a>
+                {% if user_role in ['admin', 'developer', 'protocolo'] %}
+                <a href="/registro" class="nav-link"><i class="fa-solid fa-pen-to-square"></i> Registro</a>
+                {% endif %}
+                <a href="/reports" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Informe Mensual</a>
+                <a href="/details" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Detalles de Cultos</a>
+                <a href="/stats/annual" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Estadísticas Anuales</a>
+                <a href="/about" class="nav-link"><i class="fa-solid fa-circle-info"></i> Información</a>
+            </div>
+
+            <div class="header-content">
+                <h1 class="module-title">Análisis Anual</h1>
+                <p class="module-subtitle">Resumen Mensual de Asistencia</p>
+            </div>
+        </header>
 
         <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem;">
             <form action="{{ url_for('stats_annual_view') }}" method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
