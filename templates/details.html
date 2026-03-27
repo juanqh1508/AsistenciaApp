@@ -57,79 +57,101 @@
         {% endif %}
 
         {% for r in records %}
-        <div class="card" style="margin-bottom: 2rem; padding: 1.5rem; border-top: 5px solid var(--primary);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+        <div class="card" style="margin-bottom: 2rem; padding: 0; border: none; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
+            <!-- Header section of the card -->
+            <div style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); padding: 1.5rem; color: white; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <span style="display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">{{ r.weekday_name }}</span>
-                    <span style="font-size: 1.1rem; color: #64748b; font-weight: 600;">{{ r.date.strftime('%d / %m / %Y') }}</span>
+                    <span style="display: block; font-size: 2rem; font-weight: 800; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ r.weekday_name }}</span>
+                    <span style="font-size: 1.3rem; font-weight: 600; opacity: 0.9;">{{ r.date.strftime('%d / %m / %Y') }}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     {% if user_role == 'developer' %}
                     <form action="{{ url_for('delete_record', id=r.id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar este registro? Esta acción no se puede deshacer.');" style="margin: 0;">
-                        <button type="submit" style="background: #fee2e2; color: #dc2626; border: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 1rem;" title="Eliminar definitivamente">
+                        <button type="submit" style="background: rgba(255,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.6rem 0.8rem; border-radius: 0.75rem; cursor: pointer; font-size: 1.2rem; transition: background 0.2s;" title="Eliminar definitivamente">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </form>
                     {% endif %}
                     <div style="text-align: right;">
-                        <h2 style="font-size: 1rem; color: #1e293b; margin: 0; text-transform: uppercase;">{{ r.ministry_of_service }}</h2>
-                        <span style="font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 0.3rem;">{{ r.shift }}</span>
+                        <h2 style="font-size: 1.5rem; margin: 0; text-transform: uppercase; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ r.ministry_of_service }}</h2>
+                        <span style="font-size: 1.1rem; background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 2rem; display: inline-block; margin-top: 0.4rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px);">{{ r.shift }}</span>
                     </div>
                 </div>
             </div>
 
-            <p style="margin-bottom: 1rem;"><strong>Tipo:</strong> {{ r.service_type }} ({{ r.day_category }})</p>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-                <!-- Asistencia & Porcentajes -->
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.75rem;">
-                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Asistencia y %</h3>
-                    <ul style="list-style: none; font-size: 0.9rem;">
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Niños:</span> <span>{{ r.kids }} ({{ r.pct.kids }}%)</span></li>
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Adolescentes:</span> <span>{{ r.teens }} ({{ r.pct.teens }}%)</span></li>
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Jóvenes:</span> <span>{{ r.youth }} ({{ r.pct.youth }}%)</span></li>
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Damas:</span> <span>{{ r.women }} ({{ r.pct.women }}%)</span></li>
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;"><span>Caballeros:</span> <span>{{ r.men }} ({{ r.pct.men }}%)</span></li>
-                        <li style="border-top: 1px solid #ddd; margin-top: 0.5rem; padding-top: 0.25rem; font-weight: 700; display: flex; justify-content: space-between;">
-                            <span>TOTAL:</span> <span>{{ r.total_attn }}</span>
-                        </li>
-                    </ul>
+            <div style="padding: 1.5rem;">
+                <div style="margin-bottom: 1.5rem; display: inline-block; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 0.75rem; border-left: 5px solid #6366f1;">
+                    <p style="margin: 0; font-size: 1.25rem; color: #334155;"><strong>Tipo de Culto:</strong> <span style="font-weight: 700; color: #4338ca;">{{ r.service_type }}</span> <span style="font-size: 1.1rem; color: #475569;">({{ r.day_category }})</span></p>
                 </div>
 
-                <!-- Visitas y Testimonios -->
-                <div style="background: #fdf2f2; padding: 1rem; border-radius: 0.75rem;">
-                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Visitas y Testimonios</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
-                        <div>
-                            <strong>Visitas:</strong>
-                            <p>Niñ: {{r.visits_kids}} | Adol: {{r.visits_teens}}</p>
-                            <p>Jov: {{r.visits_youth}} | Cab: {{r.visits_men}}</p>
-                            <p>Dam: {{r.visits_women}}</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <!-- Asistencia & Porcentajes -->
+                    <div style="background: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%); padding: 1.5rem; border-radius: 1.25rem; color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-users" style="font-size: 1.5rem;"></i>
+                            <h3 style="font-size: 1.4rem; margin: 0; font-weight: 800;">Asistencia y %</h3>
                         </div>
-                        <div>
-                            <strong>Testimonios:</strong>
-                            <p>Niñ: {{r.testimonies_kids}} | Adol: {{r.testimonies_teens}}</p>
-                            <p>Jov: {{r.testimonies_youth}} | Cab: {{r.testimonies_men}}</p>
-                            <p>Dam: {{r.testimonies_women}}</p>
+                        <ul style="list-style: none; font-size: 1.2rem; padding: 0; margin: 0; font-weight: 600;">
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Niños:</span> <span style="font-weight: 800;">{{ r.kids }} <span style="opacity: 0.9; font-size: 1.05rem;">({{ r.pct.kids }}%)</span></span></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Adol.:</span> <span style="font-weight: 800;">{{ r.teens }} <span style="opacity: 0.9; font-size: 1.05rem;">({{ r.pct.teens }}%)</span></span></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Jóvenes:</span> <span style="font-weight: 800;">{{ r.youth }} <span style="opacity: 0.9; font-size: 1.05rem;">({{ r.pct.youth }}%)</span></span></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Damas:</span> <span style="font-weight: 800;">{{ r.women }} <span style="opacity: 0.9; font-size: 1.05rem;">({{ r.pct.women }}%)</span></span></li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;"><span>Caballeros:</span> <span style="font-weight: 800;">{{ r.men }} <span style="opacity: 0.9; font-size: 1.05rem;">({{ r.pct.men }}%)</span></span></li>
+                            <li style="border-top: 2px dashed rgba(255,255,255,0.5); margin-top: 1rem; padding-top: 1rem; font-weight: 900; display: flex; justify-content: space-between; font-size: 1.6rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                <span>TOTAL:</span> <span>{{ r.total_attn }}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Visitas y Testimonios -->
+                    <div style="background: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%); padding: 1.5rem; border-radius: 1.25rem; color: white; box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.3);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-handshake-angle" style="font-size: 1.5rem;"></i>
+                            <h3 style="font-size: 1.4rem; margin: 0; font-weight: 800;">Visitas y Testimonios</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 1.15rem;">
+                            <div style="background: rgba(0,0,0,0.15); padding: 1rem; border-radius: 0.75rem;">
+                                <strong style="display: block; margin-bottom: 0.6rem; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Visitas</strong>
+                                <p style="margin: 0.4rem 0;">Niños: <strong>{{r.visits_kids}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Adolesc.: <strong>{{r.visits_teens}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Jóvenes: <strong>{{r.visits_youth}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Damas: <strong>{{r.visits_women}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Caballeros: <strong>{{r.visits_men}}</strong></p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.15); padding: 1rem; border-radius: 0.75rem;">
+                                <strong style="display: block; margin-bottom: 0.6rem; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Testimonios</strong>
+                                <p style="margin: 0.4rem 0;">Niños: <strong>{{r.testimonies_kids}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Adolesc.: <strong>{{r.testimonies_teens}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Jóvenes: <strong>{{r.testimonies_youth}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Damas: <strong>{{r.testimonies_women}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Caballeros: <strong>{{r.testimonies_men}}</strong></p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Convertidos y Reconciliados -->
-                <div style="background: #ecfdf5; padding: 1rem; border-radius: 0.75rem;">
-                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Evangelismo</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
-                        <div>
-                            <strong>Convertidos:</strong>
-                            <p>Niñ: {{r.converts_kids}} | Adol: {{r.converts_teens}}</p>
-                            <p>Jov: {{r.converts_youth}} | Cab: {{r.converts_men}}</p>
-                            <p>Dam: {{r.converts_women}}</p>
+                    <!-- Convertidos y Reconciliados -->
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 1.5rem; border-radius: 1.25rem; color: white; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-dove" style="font-size: 1.5rem;"></i>
+                            <h3 style="font-size: 1.4rem; margin: 0; font-weight: 800;">Convertidos y reconciliados</h3>
                         </div>
-                        <div>
-                            <strong>Reconcil.:</strong>
-                            <p>Niñ: {{r.reconciled_kids}} | Adol: {{r.reconciled_teens}}</p>
-                            <p>Jov: {{r.reconciled_youth}} | Cab: {{r.reconciled_men}}</p>
-                            <p>Dam: {{r.reconciled_women}}</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 1.15rem;">
+                            <div style="background: rgba(0,0,0,0.15); padding: 1rem; border-radius: 0.75rem;">
+                                <strong style="display: block; margin-bottom: 0.6rem; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Convertidos</strong>
+                                <p style="margin: 0.4rem 0;">Niños: <strong>{{r.converts_kids}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Adolesc.: <strong>{{r.converts_teens}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Jóvenes: <strong>{{r.converts_youth}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Damas: <strong>{{r.converts_women}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Caballeros: <strong>{{r.converts_men}}</strong></p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.15); padding: 1rem; border-radius: 0.75rem;">
+                                <strong style="display: block; margin-bottom: 0.6rem; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.3rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Reconcil.</strong>
+                                <p style="margin: 0.4rem 0;">Niños: <strong>{{r.reconciled_kids}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Adolesc.: <strong>{{r.reconciled_teens}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Jóvenes: <strong>{{r.reconciled_youth}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Damas: <strong>{{r.reconciled_women}}</strong></p>
+                                <p style="margin: 0.4rem 0;">Caballeros: <strong>{{r.reconciled_men}}</strong></p>
+                            </div>
                         </div>
                     </div>
                 </div>
